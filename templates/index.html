@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDUSCOPE</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<section class="auth-layer" id="auth-layer">
+  <div class="auth-wrap">
+    <h1 class="auth-title">EDUSCOPE</h1>
+    <p class="auth-subtitle">Tracking the heartbeat of student learning.</p>
+
+    <div class="auth-box">
+      <div class="form-group">
+        <label class="form-label">User ID</label>
+        <input class="form-input" id="login-username" type="text" placeholder="Enter your user ID" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+      <button class="predict-btn" style="margin-top:0" onclick="submitLogin()">Sign in</button>
+    </div>
+
+    <div class="auth-footer">
+      <strong style="font-size: 24px;">FDA LAB PROJECT</strong><br>
+      <strong style="font-size: 20px;">CURATED BY-</strong><br>
+      1) Nabhanyu, 2) Niharika, 3) Unnati, 4) Shreesh
+    </div>
+  </div>
+</section>
+
+<div class="shell app-shell" id="app-shell" hidden>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-kicker">"Develop a passion for learning.If you do, you will never cease to grow."</span>
+        <h1>Student learning analytics</h1>
+        <p>Real LMS engagement data, derived learning signals, and intervention-ready risk insights.</p>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" onclick="showPage('dashboard', this)">
+          <span>Dashboard</span>
+          <span class="nav-meta">Overview</span>
+        </button>
+        <button class="nav-item" onclick="showPage('students', this)">
+          <span>Student Records</span>
+          <span class="nav-meta">Profiles</span>
+        </button>
+        <button class="nav-item" onclick="showPage('clusters', this)">
+          <span>Cluster Analysis</span>
+          <span class="nav-meta">Patterns</span>
+        </button>
+        <button class="nav-item" onclick="showPage('predict', this)">
+          <span>Risk Predictor</span>
+          <span class="nav-meta">What-if</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:12px; color:rgba(244,239,231,0.74)">Signed in as <strong id="sidebar-user">admin</strong></div>
+        <button class="ghost-btn" onclick="logout()">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="page-dashboard" class="page active">
+        <article class="hero">
+          <div class="hero-grid">
+            <div>
+              <span class="eyebrow">Score derivation</span>
+              <h2 class="hero-title">How the learning scores are built.</h2>
+              <p class="hero-copy">
+                Activity Score = 0.35 x Login Frequency + 0.35 x Time Spent Modules + 0.30 x Resource Access Frequency
+                <br>
+                Participation Score = 0.60 x Participation Forums + 0.40 x Session Duration Average
+                <br>
+                Performance Score = 0.65 x Quiz Performance Average + 0.35 x Assignment Submissions
+              </p>
+
+              <div class="explore-panel">
+                <h4>EXPLORE US</h4>
+                <div class="explore-list">
+                  <div class="explore-item"><strong>Instagram:</strong> @EDUSCOPE.analytics</div>
+                  <div class="explore-item"><strong>LinkedIn:</strong> linkedin.com/in/EDUSCOPE-learning-analytics</div>
+                  <div class="explore-item"><strong>Email:</strong> EDUSCOPE.fdalab.project@gmail.com</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-panel">
+              <div>
+                <div class="panel-kicker">Average score mix</div>
+                <div style="margin-top:8px;font-family:'Syne',sans-serif;font-size:26px;line-height:1.02">Core engagement signals</div>
+              </div>
+
+              <div class="signal-stack">
+                <div class="signal-row">
+                  <div class="signal-label">Activity</div>
+                  <div class="signal-track"><div class="signal-fill" id="avg-activity-fill" style="width:0%"></div></div>
+                  <div class="signal-value" id="avg-activity-val">0</div>
+                </div>
+                <div class="signal-row">
+                  <div class="signal-label">Participation</div>
+                  <div class="signal-track"><div class="signal-fill" id="avg-participation-fill" style="width:0%"></div></div>
+                  <div class="signal-value" id="avg-participation-val">0</div>
+                </div>
+                <div class="signal-row">
+                  <div class="signal-label">Performance</div>
+                  <div class="signal-track"><div class="signal-fill" id="avg-performance-fill" style="width:0%"></div></div>
+                  <div class="signal-value" id="avg-performance-val">0</div>
+                </div>
+              </div>
+
+              <div class="panel-note" id="hero-note">These averages summarize the cohort-level balance between activity, participation, and performance.</div>
+            </div>
+          </div>
+        </article>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <div class="metric-label">Cohort Size</div>
+            <div class="metric-value accent-forest" id="kpi-total">-</div>
+            <div class="metric-sub">Students currently available in the dataset.</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">At-Risk Students</div>
+            <div class="metric-value accent-rose" id="kpi-risk">-</div>
+            <div class="metric-sub" id="kpi-risk-pct">Derived risk share</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">Average Engagement</div>
+            <div class="metric-value accent-gold" id="kpi-eng">-</div>
+            <div class="metric-sub">Weighted average of activity, participation, and performance.</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label">Top Device</div>
+            <div class="metric-value accent-forest" id="kpi-device">-</div>
+            <div class="metric-sub">Most frequently used device type in the dataset.</div>
+          </article>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">Engagement level distribution</h3>
+                <p class="card-sub">Students are grouped into inactive, sparsely involved, and actively involved bands using the weighted engagement score.</p>
+              </div>
+              <span class="section-tag">Levels</span>
+            </div>
+            <canvas id="engChart" height="200"></canvas>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">Overall risk distribution</h3>
+                <p class="card-sub">This pie chart summarizes how the cohort is currently divided between safe and at-risk students under the revised risk definition.</p>
+              </div>
+              <span class="section-tag">Risk</span>
+            </div>
+            <canvas id="riskPieChart" height="220"></canvas>
+          </article>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">Predictive feature importance</h3>
+                <p class="card-sub">Only the original raw LMS features are shown below, normalized so the displayed percentages add up to 100%.</p>
+              </div>
+              <span class="section-tag">Model</span>
+            </div>
+            <canvas id="fiChart" height="280"></canvas>
+            <div class="formula-list">
+              <div class="formula-heading">MODELS APPLIED</div>
+              <div class="formula-item"><strong>Random Forest:</strong> a tree-based ensemble that captures nonlinear patterns and interactions between student signals.</div>
+              <div class="formula-item"><strong>Logistic Regression:</strong> a linear probability model that gives a simpler and more directly interpretable risk estimate.</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">Intervention queue</h3>
+                <p class="card-sub">Highest current predicted risk probabilities. </p>
+              </div>
+              <span class="section-tag">Priority</span>
+            </div>
+            <div id="top-risk-list" class="risk-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="page-students" class="page">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">Student records</h3>
+              <p class="card-sub">A simplified table that focuses on the final segment, engagement percentage, and predicted risk only.</p>
+            </div>
+            <span class="section-tag">Records</span>
+          </div>
+
+          <div class="controls">
+            <div class="search-wrap">
+              <input class="search-box" id="search-input" placeholder="Search by student ID or course ID" oninput="debounceLoad()">
+            </div>
+            <div style="width:220px;max-width:100%">
+              <select class="filter-select" id="level-filter" onchange="loadStudents(1)">
+                <option value="all">All Levels</option>
+                <option value="inactive">Inactive</option>
+                <option value="sparse">Sparsely Involved</option>
+                <option value="active">Actively Involved</option>
+              </select>
+            </div>
+            <div style="width:220px;max-width:100%">
+              <select class="filter-select" id="risk-filter" onchange="loadStudents(1)">
+                <option value="all">All Students</option>
+                <option value="at_risk">At-Risk Only</option>
+                <option value="safe">Safe Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Course</th>
+                  <th>Signal Mix</th>
+                  <th>Engagement</th>
+                  <th>Final Segment</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="student-table-body">
+                <tr><td colspan="6" style="padding:36px 0;color:var(--muted)"><div class="loader"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div class="pag-info" id="pag-info"></div>
+            <div class="pag-btns">
+              <button class="pag-btn" id="btn-prev" onclick="changePage(-1)">Previous</button>
+              <button class="pag-btn" id="btn-next" onclick="changePage(1)">Next</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="page-clusters" class="page">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">Cluster analysis</h3>
+              <p class="card-sub">PCA is used to reduce high dimensional data to 2D for better visualization.</p>
+            </div>
+            <span class="section-tag">PCA SCATTER PLOT</span>
+          </div>
+          <p class="card-sub" id="pca-variance-label" style="margin-bottom:14px">Variance loading...</p>
+          <canvas id="scatterChart" height="360"></canvas>
+        </article>
+
+        <div class="cluster-notes">
+          <article class="cluster-note">
+            <strong style="color:var(--rose)">Inactive</strong>
+            <p>Students in this group tend to show low activity and low engagement. These profiles usually need early follow-up and targeted support.</p>
+          </article>
+          <article class="cluster-note">
+            <strong style="color:#9c6a12">Sparsely Involved</strong>
+            <p>These learners are present but inconsistent. They often respond well to nudges, structure, and better continuity across activities.</p>
+          </article>
+          <article class="cluster-note">
+            <strong style="color:var(--forest)">Actively Involved</strong>
+            <p>Students here maintain healthier study momentum and are useful as the reference pattern for stable engagement.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="page-predict" class="page">
+        <div class="predict-layout">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">Risk predictor</h3>
+                <p class="card-sub">Enter the raw LMS values and the system will compute activity, participation, performance, engagement, and risk in one pass.</p>
+              </div>
+              <span class="section-tag">Simulator</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login frequency</label>
+                <input class="form-input" id="p-login" type="number" value="8" min="0" max="20">
+                <div class="form-hint">How often the student logs in during the observation period.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time spent on modules</label>
+                <input class="form-input" id="p-time" type="number" value="18" min="0" max="40" step="0.1">
+                <div class="form-hint">Module study time from the real dataset schema.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Participation in forums</label>
+                <input class="form-input" id="p-forum" type="number" value="20" min="0" max="60">
+                <div class="form-hint">Discussion and collaboration activity.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Quiz performance average</label>
+                <input class="form-input" id="p-quiz" type="number" value="70" min="0" max="100" step="0.1">
+                <div class="form-hint">Average quiz score across assessed work.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Assignment submissions</label>
+                <input class="form-input" id="p-assign" type="number" value="5" min="0" max="10">
+                <div class="form-hint">Lower counts trigger a penalty in the risk score.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Resource access frequency</label>
+                <input class="form-input" id="p-resource" type="number" value="50" min="0" max="120">
+                <div class="form-hint">How often learning resources are opened.</div>
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label">Session duration average</label>
+                <input class="form-input" id="p-session" type="number" value="70" min="0" max="180" step="0.1">
+                <div class="form-hint">Used with forum participation to estimate involvement depth.</div>
+              </div>
+            </div>
+
+            <button class="predict-btn" onclick="runPredict()">Run engagement and risk analysis</button>
+
+            <div class="threshold-card">
+              <h4>THRESHOLD REFERNCE CARD</h4>
+              <div class="threshold-grid">
+                <div class="threshold-item">
+                  <span>Final Engagement Level</span>
+                  <strong>Inactive: Engagement Score ≤ 45<br>Sparsely Involved: 45 &lt; Engagement Score ≤ 65<br>Actively Involved: Engagement Score &gt; 65</strong>
+                </div>
+                <div class="threshold-item">
+                  <span>Risk Cutoff Threshold</span>
+                  <strong>At Risk when Derived Risk Score ≥ 55</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <div id="result-panel">
+            <article class="card result-card">
+              <div class="result-placeholder">
+                Enter student LMS activity values to see the final segment, weighted engagement score, risk score, and predictor guidance.
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
