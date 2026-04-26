@@ -2,8 +2,6 @@
 
 EDUSCOPE is a Flask-based web application for analyzing student learning behavior and estimating academic risk from LMS engagement signals. It combines a clean interactive dashboard with machine learning, clustering, score engineering, and a what-if risk predictor built on a real student engagement dataset.
 
-The system was developed as an FDA Lab project to explore how raw LMS activity can be transformed into interpretable engagement scores, final involvement segments, and intervention-ready risk insights.
-
 ## Web Link:
 👉 [LIVE DEMO](https://lms-insight-engine.onrender.com/)
 
