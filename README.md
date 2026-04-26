@@ -7,6 +7,11 @@ The system was developed as an FDA Lab project to explore how raw LMS activity c
 ## Web Link:
 👉 [LIVE DEMO](https://lms-insight-engine.onrender.com/)
 
+## Demo Login Credentials
+
+- Username: `admin`
+- Password: `jiit123`
+
 ## Key Features
 
 - Session-protected login layer with dummy authentication for demo use.
@@ -189,10 +194,6 @@ Then open:
 
 [http://localhost:5000](http://localhost:5000)
 
-## Demo Login Credentials
-
-- Username: `admin`
-- Password: `jiit123`
 
 ## Deployment Notes
 
